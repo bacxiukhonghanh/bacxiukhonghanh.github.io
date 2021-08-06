@@ -34,7 +34,7 @@ window.onload = function() {
             // fileInput.style.display = 'none';
             drawAscii(grayScales, width);
         }
-        image.src = "/artimg/" + filename + ".jpg";
+        image.src = "./img/" + filename + ".jpg";
     }
     else {
         document.title = "Error";
