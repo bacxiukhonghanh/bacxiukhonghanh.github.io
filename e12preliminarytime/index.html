@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>ENTROPY 12 PRELIMINARY</title>
+        <meta charset="UTF-8">
+        <style>
+            body {
+                background-color: black;
+            }
+            #background {
+                width: 100%; 
+                height: 99%; 
+                position: absolute; 
+                left: 0px; 
+                top: 0px; 
+                z-index: 0;
+            }
+            .stretch {
+                width:100%;
+                height:100%;
+            }
+            #time {
+                font-size: 20vh;
+                color: white;
+                position: absolute;
+                left: 0%;
+                top: 40%;
+                width: 100%;
+                text-align: center;
+                font-family: 'Arial, Helvetica', sans-serif;
+            }
+        </style>
+    </head>
+    <body>
+        <script>
+            var numberOfMinutes = 30;
+            var currentState = 0;
+            // var countdown;
+            var isTimerRunning = false;
+            var endTime;
+            
+            document.onkeydown = function (e) {
+                e = e || window.event;
+                if (e.keyCode == '38') {
+                    // up arrow
+                }
+                else if (e.keyCode == '40') {
+                    // down arrow
+                }
+                else if (e.keyCode == '37') {
+                    // left arrow
+                    if (currentState == 1) {
+                        currentState--;
+                        stopTimer();
+                    }
+                }
+                else if (e.keyCode == '39') {
+                    // right arrow
+                    if (currentState == 0) {
+                        currentState++;
+                        startTimer();
+                    }
+                }
+            }
+
+            function setClock() {
+                if (isTimerRunning) {
+                    document.getElementById("time").style.fontFamily = "Trebuchet MS,sans-serif";
+                    document.getElementById("time").style.fontSize = "25vh";
+                    let elapsed = new Date().getTime() / 1000;
+                    let totalSec =  endTime - elapsed;
+                    let d = parseInt( totalSec / 86400 );
+                    let h = (parseInt( totalSec / 3600 ) % 24) < 10 ? "0" + parseInt( totalSec / 3600 ) % 24 : parseInt( totalSec / 3600 ) % 24;
+                    let m = (parseInt( totalSec / 60 ) % 60) < 10 ? "0" + parseInt( totalSec / 60 ) % 60 : parseInt( totalSec / 60 ) % 60;
+                    let s = (parseInt(totalSec % 60, 10)) < 10 ? "0" + parseInt(totalSec % 60, 10) : parseInt(totalSec % 60, 10);
+                    let result = h + ":" + m + ":" + s;
+                    if (result == "00:00:00") {
+                        isTimerRunning = false;
+                        document.getElementById("time").innerHTML = "Time's up";
+                    }
+                    else {
+                        document.getElementById("time").innerHTML = result;
+                        setTimeout(setClock, 1000);
+                    }
+                }
+            }
+            // function createTimer(duration, display) {
+            //     var timer = duration, minutes, seconds;
+            //     countdown = setInterval(function () {
+            //         document.getElementById("time").style.fontFamily = "Trebuchet MS,sans-serif";
+            //         document.getElementById("time").style.fontSize = "25vh";
+            //         minutes = parseInt(timer / 60, 10);
+            //         seconds = parseInt(timer % 60, 10);
+
+            //         minutes = minutes < 10 ? "0" + minutes : minutes;
+            //         seconds = seconds < 10 ? "0" + seconds : seconds;
+
+            //         display.textContent = "00:" + minutes + ":" + seconds;
+
+            //         if (--timer < 0) {
+            //             timer = duration;
+            //             clearInterval(countdown);
+            //             display.textContent = "Time's up";
+            //         }
+            //     }, 1000);
+            // }
+            function startTimer() {
+                console.log("START_TIMER");
+                let display = document.querySelector('#time');
+                // createTimer(numberOfMinutes * 60, display);
+                endTime = new Date().getTime() / 1000 + (numberOfMinutes * 60 + 2);
+                setTimeout(setClock, 1000);
+                isTimerRunning = true;
+            }
+            function setTimer(minutes, seconds) {
+                endTime = new Date().getTime() / 1000 + (minutes * 60 + seconds);
+            }
+            function stopTimer() {
+                console.log("STOP_TIMER");
+                // clearInterval(countdown);
+                isTimerRunning = false;
+                document.querySelector('#time').textContent = "Vòng sơ khảo";
+                document.getElementById("time").style.fontSize = "20vh";
+                document.getElementById("time").style.fontFamily = "Arial,Helvetica,sans-serif";
+            }
+        </script>
+        <div id="background">
+            <img src="bg.png" class="stretch" alt="" />
+            <div id="time">Vòng sơ khảo</div>
+        </div>
+    </body>
+</html>
