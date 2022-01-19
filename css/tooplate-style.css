@@ -337,8 +337,9 @@ figure.effect-goliath p {
 
 figure.effect-goliath p {
   text-transform: none;
-  font-size: 0.9rem;
-  padding: 15px 10px;
+  /* font-size: 0.9rem; */
+  font-size: 0.75vw;
+  /* padding: 15px 10px; */
   opacity: 0;
   -webkit-transition: opacity 0.35s, -webkit-transform 0.35s;
   transition: opacity 0.35s, transform 0.35s;
