@@ -94,7 +94,7 @@ footer a:link, footer a:visited {
 
 .tm-site-title {
   font-size: 3.6rem;
-  text-transform: uppercase;
+  /* text-transform: uppercase; */
 }
 
 .tm-site-subtitle {
