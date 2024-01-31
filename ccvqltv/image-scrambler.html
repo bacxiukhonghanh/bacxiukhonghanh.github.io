@@ -99,18 +99,44 @@
             var resultImage = document.getElementById('resultImage');
 
             if (chosenImage.src && secretNumber.length === 9) {
-                scrambleImage(chosenImage, secretNumber, resultImage);
+                scrambleImage(chosenImage, secretNumber, resultImage, function () {
+                    createSolutionImage(chosenImage, secretNumber);
+                });
             } else {
                 alert('Please load an image and enter a 9-digit number.');
             }
         }
 
-        function scrambleImage(image, secretNumber, resultImage) {
+        function drawPiece(ctx, img, piece, pieceWidth, pieceHeight, col, row, index, borderThickness, borderColor, textColor, textShadowColor) {
+            // Draw the piece
+            ctx.drawImage(img, piece.x, piece.y, pieceWidth, pieceHeight, col * pieceWidth, row * pieceHeight, pieceWidth, pieceHeight);
+
+            // Draw the border
+            ctx.strokeStyle = borderColor;
+            ctx.lineWidth = borderThickness;
+            ctx.strokeRect(col * pieceWidth, row * pieceHeight, pieceWidth, pieceHeight);
+
+            // Style and position the number
+            var fontSize = pieceWidth * 0.2; // 20% of piece's width
+            ctx.font = `${fontSize}px Arial`;
+            ctx.fillStyle = textColor;
+            ctx.shadowColor = textShadowColor;
+            ctx.shadowBlur = 20;
+
+            // Calculate vertical position to ensure the number is fully visible
+            var textHeight = fontSize; // Approximate height of the text
+            var verticalPosition = row * pieceHeight + textHeight; // Adjusted position
+
+            ctx.fillText(index + 1, col * pieceWidth + 10, verticalPosition); // Draw text
+            ctx.shadowBlur = 0; // Reset shadowBlur for next piece
+        }
+
+        function scrambleImage(image, secretNumber, resultImage, callback) {
             var canvas = document.createElement('canvas');
             var ctx = canvas.getContext('2d');
             var img = new Image();
 
-            img.onload = function() {
+            img.onload = function () {
                 var pieceWidth = img.width / 3;
                 var pieceHeight = img.height / 3;
 
@@ -134,29 +160,68 @@
                     mappedPieces[originalPosition] = pieces[i];
                 }
 
+                // Define color and border properties
+                var borderColor = 'white';
+                var textColor = 'white';
+                var textShadowColor = 'black';
+                var borderThickness = 5; // Adjust thickness as needed
+
                 // Draw the scrambled image and numbers on the canvas
                 mappedPieces.forEach((piece, index) => {
                     let col = index % 3;
                     let row = Math.floor(index / 3);
-                    ctx.drawImage(img, piece.x, piece.y, pieceWidth, pieceHeight, col * pieceWidth, row * pieceHeight, pieceWidth, pieceHeight);
-
-                    // Style and position the number
-                    var fontSize = pieceWidth * 0.2; // 20% of piece's width
-                    ctx.font = `${fontSize}px Arial`;
-                    ctx.fillStyle = 'white';
-                    ctx.shadowColor = 'black';
-                    ctx.shadowBlur = 7;
-
-                    // Calculate vertical position to ensure the number is fully visible
-                    var textHeight = fontSize; // Approximate height of the text
-                    var verticalPosition = row * pieceHeight + textHeight; // Adjusted position
-
-                    ctx.fillText(index + 1, col * pieceWidth + 10, verticalPosition); // Draw text
-                    ctx.shadowBlur = 0; // Reset shadowBlur for next piece
+                    drawPiece(ctx, img, piece, pieceWidth, pieceHeight, col, row, index, borderThickness, borderColor, textColor, textShadowColor);
                 });
 
                 resultImage.src = canvas.toDataURL();
+
+                // Call the callback function after scrambling is done
+                if (callback) {
+                    callback();
+                }
             };
+            img.src = image.src;
+        }
+
+        function createSolutionImage(image, secretNumber) {
+            var canvas = document.createElement('canvas');
+            var ctx = canvas.getContext('2d');
+            var img = new Image();
+
+            img.onload = function () {
+                var pieceWidth = img.width / 3;
+                var pieceHeight = img.height / 3;
+
+                canvas.width = img.width;
+                canvas.height = img.height;
+
+                var pieces = [];
+
+                for (let y = 0; y < 3; y++) {
+                    for (let x = 0; x < 3; x++) {
+                        pieces.push({ x: x * pieceWidth, y: y * pieceHeight });
+                    }
+                }
+
+                // Define color and border properties
+                var borderColor = 'white';
+                var textColor = 'white';
+                var textShadowColor = 'black';
+                var borderThickness = 5; // Adjust thickness as needed
+
+                pieces.forEach((piece, index) => {
+                    let col = index % 3;
+                    let row = Math.floor(index / 3);
+
+                    // For the solution image, the label is based on the secret number
+                    var labelIndex = secretNumber.charAt(index);
+                    drawPiece(ctx, img, piece, pieceWidth, pieceHeight, col, row, labelIndex - 1, borderThickness, borderColor, textColor, textShadowColor);
+                });
+
+                // Set the solution image as the source for the chosenImage
+                document.getElementById('chosenImage').src = canvas.toDataURL();
+            };
+
             img.src = image.src;
         }
 
